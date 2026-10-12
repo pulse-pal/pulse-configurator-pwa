@@ -1,0 +1,400 @@
+/* ==========================================================
+   PulsePal Configurator — main.css
+   Foundation: theme tokens, reset, typography, app shell
+   ========================================================== */
+
+/* ---------- LIGHT THEME (default) ---------- */
+:root {
+  --bg: #FFFFFF;
+  --bg-soft: #F3F5F8;
+  --surface: #FFFFFF;
+  --surface-2: #EEF1F5;
+  --text: #0B0F14;
+  --text-muted: #3F4A56;
+  --heading: #0B0F14;
+  --border: #CBD2DA;
+
+  --accent: #FF7A1A;
+  --accent-strong: #E8650A;
+  --accent-soft: #FFE9D6;
+  --on-accent: #1A0F05;
+
+  --success: #1D6FD8;
+  --success-soft: #DCEBFC;
+  --danger: #D92D20;
+  --danger-soft: #FDE4E1;
+  --warning: #B45309;
+  --warning-soft: #FEF0D6;
+
+  --shadow-sm: 0 1px 2px rgba(11, 15, 20, 0.08);
+  --shadow-md: 0 6px 18px rgba(11, 15, 20, 0.10);
+  --shadow-accent: 0 8px 20px rgba(255, 122, 26, 0.35);
+
+  --card-gradient: linear-gradient(180deg, #FFFFFF 0%, #F6F8FB 100%);
+  --btn-gradient: linear-gradient(180deg, #FF8E3A 0%, #FF7A1A 100%);
+
+  color-scheme: light;
+}
+
+/* ---------- DARK THEME (near-black charcoal, matches Driver PWA) ---------- */
+:root[data-theme="dark"] {
+  --bg: #14161B;
+  --bg-soft: #181B21;
+  --surface: #1C1F26;
+  --surface-2: #262A33;
+  --text: #9BA3AF;
+  --text-muted: #8A93A0;
+  --heading: #F7F3EA;
+  --border: #2E333D;
+
+  --accent: #FF7A1A;
+  --accent-strong: #FF8E3A;
+  --accent-soft: #3A2312;
+  --on-accent: #1A0F05;
+
+  --success: #5AA2F5;
+  --success-soft: #14263F;
+  --danger: #FF6B5E;
+  --danger-soft: #3A1B19;
+  --warning: #F2A33C;
+  --warning-soft: #38290F;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 8px 22px rgba(0, 0, 0, 0.55);
+  --shadow-accent: 0 8px 22px rgba(255, 122, 26, 0.28);
+
+  --card-gradient: linear-gradient(180deg, #21252D 0%, #1A1D23 100%);
+  --btn-gradient: linear-gradient(180deg, #FF8E3A 0%, #FF7A1A 100%);
+
+  color-scheme: dark;
+}
+
+/* ---------- AUTO THEME (follows phone, only when no manual choice) ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg: #14161B;
+    --bg-soft: #181B21;
+    --surface: #1C1F26;
+    --surface-2: #262A33;
+    --text: #9BA3AF;
+    --text-muted: #8A93A0;
+    --heading: #F7F3EA;
+    --border: #2E333D;
+
+    --accent: #FF7A1A;
+    --accent-strong: #FF8E3A;
+    --accent-soft: #3A2312;
+    --on-accent: #1A0F05;
+
+    --success: #5AA2F5;
+    --success-soft: #14263F;
+    --danger: #FF6B5E;
+    --danger-soft: #3A1B19;
+    --warning: #F2A33C;
+    --warning-soft: #38290F;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 8px 22px rgba(0, 0, 0, 0.55);
+    --shadow-accent: 0 8px 22px rgba(255, 122, 26, 0.28);
+
+    --card-gradient: linear-gradient(180deg, #21252D 0%, #1A1D23 100%);
+    --btn-gradient: linear-gradient(180deg, #FF8E3A 0%, #FF7A1A 100%);
+
+    color-scheme: dark;
+  }
+}
+
+/* ---------- DESIGN TOKENS (theme independent) ---------- */
+:root {
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Type scale — normal phone sizes. rem units, so they also follow the
+     phone's own Font size setting (accessibility). */
+  --fs-xs: 0.8125rem;  /* 13 */
+  --fs-sm: 0.875rem;   /* 14 */
+  --fs-md: 1rem;       /* 16 */
+  --fs-lg: 1.125rem;   /* 18 */
+  --fs-xl: 1.5rem;     /* 24 */
+  --fs-xxl: 1.875rem;  /* 30 */
+
+  /* Spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  /* Work tool: every tap target is at least 56px */
+  --tap: 56px;
+
+  --topbar-h: 64px;
+  --nav-h: 72px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ---------- RESET ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--font);
+  font-size: var(--fs-md);
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+a {
+  color: var(--accent-strong);
+  text-decoration: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- TYPOGRAPHY ---------- */
+h1,
+h2,
+h3,
+h4 {
+  margin: 0 0 var(--sp-3);
+  color: var(--heading);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: var(--fs-xl); }
+h2 { font-size: var(--fs-lg); }
+h3 { font-size: var(--fs-md); }
+
+p {
+  margin: 0 0 var(--sp-3);
+}
+
+.text-muted { color: var(--text-muted); }
+.text-sm { font-size: var(--fs-sm); }
+.text-xs { font-size: var(--fs-xs); }
+.text-center { text-align: center; }
+.text-strong { font-weight: 700; color: var(--heading); }
+.mono { font-family: ui-monospace, "SF Mono", Consolas, monospace; letter-spacing: 0.02em; }
+
+/* ---------- ACCESSIBILITY ---------- */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- APP SHELL ---------- */
+#app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  margin: 0 auto;
+  background: var(--bg);
+}
+
+/* Top bar: [back arrow] title ........ staff badge
+   Title sits at the far left. The back arrow only takes space when shown. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: calc(var(--topbar-h) + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) var(--sp-4) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  background: var(--bg);
+  border-bottom: 2px solid var(--border);
+}
+
+.topbar__back {
+  width: var(--tap);
+  height: var(--tap);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  margin-left: calc(var(--sp-3) * -1);   /* arrow lines up with the page edge */
+  margin-right: calc(var(--sp-2) * -1);
+  border-radius: var(--radius-md);
+  color: var(--heading);
+}
+
+.topbar__back:active {
+  background: var(--surface-2);
+}
+
+.topbar__title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Staff badge — always visible so shared phones are obvious */
+.staff-badge {
+  flex-shrink: 0;
+  max-width: 150px;
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--heading);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Page container */
+#view {
+  flex: 1;
+  padding: var(--sp-4);
+  padding-bottom: calc(var(--nav-h) + var(--sp-5) + env(safe-area-inset-bottom));
+}
+
+/* When bottom nav is hidden (login, install flow) */
+#app.no-nav #view {
+  padding-bottom: calc(var(--sp-5) + env(safe-area-inset-bottom));
+}
+
+/* Bottom navigation: Home | Installations | Tools | Settings */
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  z-index: 60;
+  width: 100%;
+  max-width: 560px;
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--surface);
+  border-top: 2px solid var(--border);
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.06);
+}
+
+#app.no-nav .bottom-nav {
+  display: none;
+}
+
+.bottom-nav__item {
+  position: relative;
+  min-height: var(--tap);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.bottom-nav__item svg {
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bottom-nav__item.active {
+  color: var(--accent-strong);
+}
+
+.bottom-nav__item.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 40px;
+  height: 4px;
+  border-radius: 0 0 4px 4px;
+  background: var(--accent);
+}
+
+/* ---------- PAGE ENTER ANIMATION ---------- */
+.page-enter {
+  animation: pageIn 0.28s var(--ease);
+}
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- LAYOUT HELPERS ---------- */
+.stack > * + * { margin-top: var(--sp-4); }
+.stack-sm > * + * { margin-top: var(--sp-2); }
+.row { display: flex; align-items: center; gap: var(--sp-3); }
+.row--between { justify-content: space-between; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
+.hidden { display: none !important; }

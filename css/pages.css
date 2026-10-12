@@ -1,0 +1,713 @@
+/* ==========================================================
+   PulsePal Configurator — pages.css
+   Screen-specific layout only. Reusable parts live in components.css
+   Loaded after components.css, so rules here refine the shared parts.
+   ========================================================== */
+
+/* ---------- EXTRA TOKENS ---------- */
+:root {
+  --card-border: rgba(11, 15, 20, 0.12);
+  --done-bg: rgba(29, 111, 216, 0.12);
+  --done-fg: #1D6FD8;
+  --warn-bg: rgba(180, 83, 9, 0.12);
+  --warn-fg: #B45309;
+  --thumb: #FFFFFF;
+  --danger-line: rgba(217, 45, 32, 0.28);
+}
+
+:root[data-theme="dark"] {
+  --card-border: rgba(255, 255, 255, 0.08);
+  --done-bg: rgba(59, 130, 246, 0.15);
+  --done-fg: #60A5FA;
+  --warn-bg: rgba(242, 163, 60, 0.15);
+  --warn-fg: #F2A33C;
+  --thumb: #373D4A;
+  --danger-line: rgba(255, 107, 94, 0.34);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --card-border: rgba(255, 255, 255, 0.08);
+    --done-bg: rgba(59, 130, 246, 0.15);
+    --done-fg: #60A5FA;
+    --warn-bg: rgba(242, 163, 60, 0.15);
+    --warn-fg: #F2A33C;
+    --thumb: #373D4A;
+    --danger-line: rgba(255, 107, 94, 0.34);
+  }
+}
+
+/* ---------- SCROLL SPACE: content always clears the fixed bottom nav ---------- */
+#view {
+  padding-bottom: calc(var(--nav-h) + 56px + env(safe-area-inset-bottom));
+}
+
+/* ---------- TOP BAR STAFF BADGE: flat text, not a floating pill ---------- */
+.staff-badge {
+  background: none;
+  padding: 0 0 0 var(--sp-3);
+  border-left: 2px solid var(--border);
+  border-radius: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+/* Settings shows the same details in the profile card */
+#app.no-badge .staff-badge {
+  display: none;
+}
+
+/* ---------- BROWSER AUTOFILL FIX (applies to every input) ----------
+   Chrome paints autofilled fields blue-grey. Keep our own colours. */
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:active,
+.select:-webkit-autofill,
+.textarea:-webkit-autofill {
+  -webkit-text-fill-color: var(--heading);
+  caret-color: var(--heading);
+  box-shadow: 0 0 0 1000px var(--surface) inset;
+  transition: background-color 9999s ease-out 0s;
+}
+
+.input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--heading);
+  box-shadow: 0 0 0 1000px var(--surface) inset, 0 0 0 4px var(--accent-soft);
+}
+
+/* ---------- CARD DEFINITION: delicate border lifts cards off the background ---------- */
+.card,
+.list-item {
+  border: 1px solid var(--card-border);
+}
+
+/* ---------- LIST ITEM (installation cards) — typography hierarchy ---------- */
+.list-item {
+  box-shadow: var(--shadow-sm);
+}
+
+/* 1. Device ID: bold and prominent */
+.list-item__code {
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--heading);
+}
+
+/* 2. Plate: clean, contrasting weight */
+.list-item__plate {
+  margin: 0 0 var(--sp-1);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--heading);
+}
+
+/* 3. Client + time: muted so the card reads top to bottom */
+.list-item__meta {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Soft tinted badges: no glow, thin icon */
+.list-item .badge {
+  box-shadow: none;
+  font-weight: 700;
+}
+
+.list-item .badge svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+.list-item .badge--ok {
+  background: var(--done-bg);
+  color: var(--done-fg);
+}
+
+.list-item .badge--warn {
+  background: var(--warn-bg);
+  color: var(--warn-fg);
+}
+
+/* ---------- LOGIN ---------- */
+.login {
+  min-height: calc(100dvh - var(--sp-5) * 2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* The icon tile is darker than the page background, so frame it:
+   thin border + faint orange glow makes it read as an app icon. */
+.login__logo {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto var(--sp-4);
+  border-radius: 24px;
+  border: 2px solid var(--border);
+  box-shadow: 0 0 0 4px var(--bg), 0 10px 32px rgba(255, 122, 26, 0.22);
+}
+
+.login__title {
+  margin-bottom: var(--sp-1);
+  text-align: center;
+  font-size: var(--fs-xl);
+}
+
+.login__sub {
+  margin-bottom: var(--sp-6);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.login__note {
+  margin-top: var(--sp-5);
+  text-align: center;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+/* ---------- HOME ---------- */
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: calc(var(--sp-3) + env(safe-area-inset-top)) var(--sp-1) var(--sp-5);
+}
+
+.home-header__text {
+  min-width: 0;
+}
+
+.home__hello {
+  margin: 0 0 var(--sp-1);
+  font-size: var(--fs-xl);
+}
+
+.home__sub {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+/* Profile button, top right */
+.avatar-btn {
+  width: var(--tap);
+  height: var(--tap);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--card-gradient);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+  color: var(--accent-strong);
+  font-size: var(--fs-md);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.avatar-btn:active {
+  background: var(--surface-2);
+}
+
+/* Primary action: pill shape, subtle gradient, soft natural shadow. */
+.home__install {
+  min-height: 60px;
+  margin: 0 0 var(--sp-5);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-md);
+  box-shadow: 0 4px 14px rgba(255, 122, 26, 0.22), 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.home__install svg {
+  width: 22px;
+  height: 22px;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: var(--sp-5) 0 var(--sp-3);
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: var(--fs-md);
+}
+
+/* ---------- INSTALL FLOW (shared) ---------- */
+.install__title {
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-xl);
+}
+
+.install__sub {
+  margin-bottom: var(--sp-5);
+  color: var(--text-muted);
+}
+
+.install__footer {
+  margin-top: var(--sp-5);
+}
+
+/* Reminder strip: "Installing PULSE-0004 on KBZ 123A" */
+.reminder {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--accent-soft);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-md);
+  font-weight: 800;
+  color: var(--heading);
+}
+
+.reminder svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  stroke: var(--accent-strong);
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- STEP 1: next code card ---------- */
+.next-code {
+  margin-bottom: var(--sp-5);
+  text-align: center;
+}
+
+.next-code__code {
+  display: block;
+  margin: var(--sp-2) 0;
+  font-size: var(--fs-xxl);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--accent-strong);
+}
+
+/* ---------- STEP 3: fleet / client form ---------- */
+.new-fleet {
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-4);
+  background: var(--surface-2);
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius-lg);
+}
+
+/* ---------- STEP 4: diagram in modal ---------- */
+.obd-diagram {
+  width: 100%;
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-4);
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+}
+
+.obd-diagram svg {
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- STEP 5: test summary ---------- */
+.test-banner {
+  margin: var(--sp-5) 0 var(--sp-4);
+  padding: var(--sp-5) var(--sp-4);
+  text-align: center;
+  border-radius: var(--radius-lg);
+  background: var(--success-soft);
+  color: var(--success);
+  font-size: var(--fs-lg);
+  font-weight: 800;
+}
+
+.test-banner--fail {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* ---------- INSTALL COMPLETE ---------- */
+.complete {
+  text-align: center;
+}
+
+.complete__title {
+  margin-bottom: var(--sp-5);
+  font-size: var(--fs-xl);
+}
+
+.complete .card {
+  margin-bottom: var(--sp-4);
+  text-align: left;
+}
+
+.sms-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-5);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--success-soft);
+  border-radius: var(--radius-md);
+  color: var(--success);
+  font-weight: 800;
+}
+
+.sms-note svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.return-timer {
+  margin: var(--sp-4) 0 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+/* ---------- MY INSTALLATIONS ---------- */
+.installs__stats {
+  margin-bottom: var(--sp-4);
+}
+
+.installs__tools {
+  margin-bottom: var(--sp-4);
+}
+
+.installs__tools > * + * {
+  margin-top: var(--sp-3);
+}
+
+.installs__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.install-issue {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--danger);
+}
+
+/* ---------- INSTALLATION DETAIL ---------- */
+.detail > * + * {
+  margin-top: var(--sp-4);
+}
+
+.detail__photo {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border);
+}
+
+.detail__notes {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.check-line {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.check-line svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.check-line--pass svg { color: var(--success); }
+.check-line--fail svg { color: var(--danger); }
+
+/* ---------- TOOLS TAB ---------- */
+.tools-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.tool-link {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  width: 100%;
+  min-height: 88px;
+  padding: var(--sp-4);
+  text-align: left;
+  background: var(--card-gradient);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.tool-link:active {
+  background: var(--surface-2);
+}
+
+.tool-link__icon {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.tool-link__icon svg {
+  width: 30px;
+  height: 30px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tool-link__title {
+  margin: 0 0 2px;
+  font-size: var(--fs-md);
+  font-weight: 800;
+  color: var(--heading);
+}
+
+.tool-link__desc {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+/* Area picker on Fix a problem */
+.area-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.area-btn {
+  min-height: 72px;
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  background: var(--card-gradient);
+  border: 3px solid var(--border);
+  border-radius: var(--radius-lg);
+  font-weight: 800;
+  color: var(--heading);
+}
+
+.area-btn.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.fix-steps {
+  margin: 0;
+  padding-left: var(--sp-5);
+}
+
+.fix-steps li {
+  margin-bottom: var(--sp-3);
+  color: var(--heading);
+  font-weight: 600;
+}
+
+/* ---------- SETTINGS ---------- */
+.settings > * + * {
+  margin-top: var(--sp-4);
+}
+
+/* Profile card: roomy padding + soft ambient shadow */
+.profile-card {
+  padding: var(--sp-5);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.10);
+}
+
+.profile-card__top {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.profile-card__text {
+  min-width: 0;
+}
+
+.profile-card__text h2 {
+  margin: 0 0 2px;
+  font-size: var(--fs-lg);
+}
+
+.profile-card__text p {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+/* Soft gradient avatar with a faint halo ring */
+.avatar-lg {
+  width: 68px;
+  height: 68px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(255, 122, 26, 0.30), rgba(255, 122, 26, 0.10));
+  border: 1px solid rgba(255, 122, 26, 0.35);
+  box-shadow: 0 0 0 6px rgba(255, 122, 26, 0.08);
+  color: var(--accent-strong);
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+/* Structured metadata tags */
+.meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--card-border);
+}
+
+.meta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 6px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.meta-tag__label {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Appearance toggle: neutral pill that slides under the active option */
+.theme-switch {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-pill);
+}
+
+.theme-switch__thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 3);
+  background: var(--thumb);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 4px 10px rgba(0, 0, 0, 0.10);
+  transition: transform 0.28s var(--ease);
+}
+
+.theme-switch__btn {
+  position: relative;
+  z-index: 1;
+  min-height: 48px;
+  padding: 10px var(--sp-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.theme-switch__btn.active {
+  color: var(--heading);
+  font-weight: 700;
+}
+
+/* Log out: tinted red, centred, not a full-width slab */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  width: min(100%, 220px);
+  min-height: var(--tap);
+  margin: var(--sp-6) auto 0;
+  padding: 0 var(--sp-5);
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid var(--danger-line);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-md);
+  font-weight: 700;
+}
+
+.logout-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.logout-btn:active {
+  transform: scale(0.98);
+}
+
+.settings__version {
+  margin-top: var(--sp-6);
+  text-align: center;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+/* ---------- OFFLINE BANNER ---------- */
+.offline-banner {
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--warning-soft);
+  color: var(--warning);
+  text-align: center;
+  font-size: var(--fs-sm);
+  font-weight: 800;
+}
