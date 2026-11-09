@@ -24,7 +24,7 @@ const STAFF_LIST = [
     email: "fred@pulsepal.com",
     role: "admin",
     staff_code: "Admin-001",
-    installs_before_today: 46   // older installs not in the list below
+    installs_before_today: 46   // UNUSED after the counts fix: totals now come from installation dates
   },
   {
     id: 2,
@@ -33,7 +33,7 @@ const STAFF_LIST = [
     email: "adow@pulsepal.com",
     role: "admin",
     staff_code: "Admin-002",
-    installs_before_today: 31
+    installs_before_today: 31   // UNUSED after the counts fix
   }
 ];
 
@@ -57,7 +57,123 @@ const VEHICLE_TYPES = [
   { value: "matatu", label: "Matatu" },
   { value: "bus", label: "Bus" },
   { value: "lorry", label: "Lorry" },
+  { value: "truck", label: "Truck" },
   { value: "other", label: "Other" }
+];
+
+/* ---------- SPEEDOMETER MAX ----------
+   The gauge in the Driver PWA scales to the LAST NUMBER PRINTED on the
+   car's dash, not the car's real top speed. The installer confirms it. */
+
+/* Used when there is no suggestion (no signal, no match, lookup failed,
+   or a digital dash). Any type not listed here (e.g. "other") gets 180. */
+const TYPE_DEFAULTS = {
+  car: 180,
+  suv: 180,
+  pickup: 180,
+  van: 180,
+  matatu: 120,
+  bus: 120,
+  lorry: 120,
+  truck: 120
+};
+
+const SPEEDO_FALLBACK_DEFAULT = 180;
+
+function typeDefaultSpeedo(vehicleType) {
+  return TYPE_DEFAULTS[vehicleType] || SPEEDO_FALLBACK_DEFAULT;
+}
+
+/* Where a speedometer_max value came from. Matches the database column
+   vehicles.speedometer_max_source: 'installer' | 'ai_lookup' | 'default'. */
+const SPEEDO_SOURCE_LABELS = {
+  ai_lookup: "Looked up from make and model",
+  installer: "Set by installer",
+  default: "Type default"
+};
+
+/* Stand-in for the backend's vehicle_models cache.
+   One row per model; the lookup picks the row whose year is closest.
+   NOTE: these numbers are PLACEHOLDERS for testing, not checked against
+   real dashes. The real lookup endpoint replaces this table. */
+const VEHICLE_MODELS = [
+  { make: "Toyota",     model: "Axio",       year: 2012, speedometer_max: 180 },
+  { make: "Toyota",     model: "Premio",     year: 2012, speedometer_max: 180 },
+  { make: "Toyota",     model: "Fielder",    year: 2013, speedometer_max: 180 },
+  { make: "Toyota",     model: "Land Cruiser", year: 2012, speedometer_max: 220 },
+  { make: "Toyota",     model: "Hilux",      year: 2014, speedometer_max: 180 },
+  { make: "Toyota",     model: "Probox",     year: 2012, speedometer_max: 180 },
+  { make: "Nissan",     model: "Note",       year: 2014, speedometer_max: 180 },
+  { make: "Nissan",     model: "X-Trail",    year: 2014, speedometer_max: 200 },
+  { make: "Subaru",     model: "Forester",   year: 2012, speedometer_max: 180 },
+  { make: "Subaru",     model: "Impreza",    year: 2012, speedometer_max: 180 },
+  { make: "Isuzu",      model: "NQR",        year: 2014, speedometer_max: 120 },
+  { make: "Isuzu",      model: "FRR",        year: 2014, speedometer_max: 120 },
+  { make: "Mitsubishi", model: "Canter",     year: 2014, speedometer_max: 120 },
+  { make: "Mercedes",   model: "Actros",     year: 2014, speedometer_max: 140 }
+];
+
+/* Delay that imitates a network call, so the form's "looking up" state
+   can be seen and tested. Remove with the real endpoint. */
+const SPEEDO_LOOKUP_DELAY_MS = 500;
+
+function speedoKey(text) {
+  return String(text || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+/* THE ONE FUNCTION THE FORM CALLS. It never rejects.
+   Resolves to one of:
+     { ok: true,  speedometer_max: 180, source: "ai_lookup" }
+     { ok: false, reason: "no_match" | "offline" | "error" }
+   When the real endpoint exists, replace the body of this function only.
+   Keep the arguments and the result shape and the form needs no change. */
+async function lookupSpeedoMax(make, model, year) {
+  await new Promise(function (resolve) {
+    setTimeout(resolve, SPEEDO_LOOKUP_DELAY_MS);
+  });
+
+  try {
+    // Stand-in for "no signal". A real fetch() failing lands in the catch below.
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      return { ok: false, reason: "offline" };
+    }
+
+    const makeKey = speedoKey(make);
+    const modelKey = speedoKey(model);
+    if (!makeKey || !modelKey) return { ok: false, reason: "no_match" };
+
+    const rows = VEHICLE_MODELS.filter(function (row) {
+      return speedoKey(row.make) === makeKey && speedoKey(row.model) === modelKey;
+    });
+    if (!rows.length) return { ok: false, reason: "no_match" };
+
+    const wanted = Number(year);
+    let best = rows[0];
+    if (wanted) {
+      rows.forEach(function (row) {
+        if (Math.abs(row.year - wanted) < Math.abs(best.year - wanted)) best = row;
+      });
+    }
+
+    return { ok: true, speedometer_max: best.speedometer_max, source: "ai_lookup" };
+  } catch (err) {
+    return { ok: false, reason: "error" };
+  }
+}
+
+/* ---------- SPEC CORRECTIONS (dummy log) ----------
+   Step 3 appends an entry here when an installer changes the suggested
+   speedometer max. A correction applies to THAT vehicle only. It never
+   edits VEHICLE_MODELS. The backend will review this log later. */
+const SPEC_CORRECTIONS = [
+  {
+    vehicle_plate: "KCB 555E",
+    old_value: 180,
+    old_source: "ai_lookup",
+    new_value: 200,
+    staff_code: "Admin-001",
+    at: daysAgo(2, 15, 5)
+  }
 ];
 
 /* ---------- FLEET ACCOUNTS ---------- */
@@ -80,7 +196,8 @@ const FLEET_ACCOUNTS = [
 
 /* ---------- INSTALLATIONS ----------
    test_results: result of the 4 checks at install time, read per record.
-   status: "complete" or "issue". */
+   status: "complete" or "issue".
+   speedometer_max_source: "ai_lookup" | "installer" | "default". */
 const INSTALLATIONS = [
   {
     id: 5,
@@ -97,6 +214,8 @@ const INSTALLATIONS = [
     vehicle_model: "Demio",
     vehicle_year: 2016,
     vehicle_type: "car",
+    speedometer_max: 180,
+    speedometer_max_source: "default",
     fleet_name: null,
     status: "issue",
     issue: "OBD not reading — vehicle needs engine running",
@@ -128,6 +247,8 @@ const INSTALLATIONS = [
     vehicle_model: "HiAce",
     vehicle_year: 2017,
     vehicle_type: "matatu",
+    speedometer_max: 120,
+    speedometer_max_source: "default",
     fleet_name: "XYZ Matatus",
     status: "complete",
     installed_by: "Fred Mwangi",
@@ -158,6 +279,8 @@ const INSTALLATIONS = [
     vehicle_model: "Forester",
     vehicle_year: 2015,
     vehicle_type: "suv",
+    speedometer_max: 200,        // installer changed 180 -> 200 (see SPEC_CORRECTIONS)
+    speedometer_max_source: "installer",
     fleet_name: null,
     status: "complete",
     installed_by: "Fred Mwangi",
@@ -188,6 +311,8 @@ const INSTALLATIONS = [
     vehicle_model: "NQR",
     vehicle_year: 2019,
     vehicle_type: "lorry",
+    speedometer_max: 120,
+    speedometer_max_source: "ai_lookup",
     fleet_name: "ABC Trucking Ltd",
     status: "complete",
     installed_by: "Adow",
@@ -215,9 +340,11 @@ const INSTALLATIONS = [
     client_type: "individual",
     vehicle_plate: "KBZ 123A",
     vehicle_make: "Toyota",
-    vehicle_model: "Corolla Axio",
+    vehicle_model: "Axio",
     vehicle_year: 2018,
     vehicle_type: "car",
+    speedometer_max: 180,
+    speedometer_max_source: "ai_lookup",
     fleet_name: null,
     status: "complete",
     installed_by: "Fred Mwangi",
