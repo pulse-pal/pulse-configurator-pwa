@@ -5,11 +5,19 @@
 
   <div class="card">
     <div class="kv"><span class="kv__key">Device code</span><span class="kv__value mono" id="sumCode"></span></div>
-    <div class="kv"><span class="kv__key">Vehicle</span><span class="kv__value" id="sumVehicle"></span></div>
     <div class="kv"><span class="kv__key">Client</span><span class="kv__value" id="sumClient"></span></div>
-    <div class="kv"><span class="kv__key">Type</span><span class="kv__value" id="sumType"></span></div>
+    <div class="kv"><span class="kv__key">Client type</span><span class="kv__value" id="sumType"></span></div>
     <div class="kv"><span class="kv__key">Installed by</span><span class="kv__value" id="sumBy"></span></div>
     <div class="kv"><span class="kv__key">Time</span><span class="kv__value" id="sumTime"></span></div>
+  </div>
+
+  <div class="card">
+    <p class="card__label">Vehicle</p>
+    <div class="kv"><span class="kv__key">Vehicle</span><span class="kv__value" id="sumVehicle"></span></div>
+    <div class="kv"><span class="kv__key">Plate</span><span class="kv__value mono" id="sumPlate"></span></div>
+    <div class="kv"><span class="kv__key">Type</span><span class="kv__value" id="sumVehicleType"></span></div>
+    <div class="kv"><span class="kv__key">Speedometer max</span><span class="kv__value" id="sumSpeedo"></span></div>
+    <div class="kv"><span class="kv__key">Source</span><span class="kv__value" id="sumSpeedoSource"></span></div>
   </div>
 
   <div class="sms-note">
@@ -68,17 +76,35 @@
   $("mark").innerHTML = Icons.get("check");
   $("title").textContent = record.device_code + " installed";
 
-  const vehicleBits = [record.vehicle_plate];
-  const typeLabel = Fmt.vehicleTypeLabel(record.vehicle_type);
-  if (typeLabel) vehicleBits.push(typeLabel);
+  const NOT_RECORDED = "Not recorded";
+
+  const makeModelYear = [record.vehicle_make, record.vehicle_model, record.vehicle_year]
+    .filter(function (part) { return part; })
+    .join(" ");
 
   $("sumCode").textContent = record.device_code;
-  $("sumVehicle").textContent = vehicleBits.join(" · ");
   $("sumClient").textContent = record.client_name;
   $("sumType").textContent = Fmt.clientTypeLabel(record.client_type);
   $("sumBy").textContent = (record.installed_by.split(" ")[0]) + " (" + record.installed_by_code + ")";
   $("sumTime").textContent = Fmt.friendly(record.installed_at);
-  $("smsText").textContent = "Welcome SMS sent to " + record.client_name;
+
+  $("sumVehicle").textContent = makeModelYear || NOT_RECORDED;
+  $("sumPlate").textContent = record.vehicle_plate;
+  $("sumVehicleType").textContent = Fmt.vehicleTypeLabel(record.vehicle_type) || NOT_RECORDED;
+  $("sumSpeedo").textContent = record.speedometer_max ? record.speedometer_max + " km/h" : NOT_RECORDED;
+  $("sumSpeedoSource").textContent = SPEEDO_SOURCE_LABELS[record.speedometer_max_source] || NOT_RECORDED;
+
+  /* ---------- Welcome SMS: what the person is told depends on who they are ---------- */
+  let smsMessage;
+  if (record.driver_account_type === "fleet_driver") {
+    // Assigned fleet driver: no device code, no subscribe step
+    smsMessage = "SMS sent to " + record.driver_name + ": log in with your phone number.";
+  } else if (record.client_type === "individual") {
+    smsMessage = "SMS sent to " + record.client_name + ": set up your account with your device code.";
+  } else {
+    smsMessage = "No driver assigned, so no SMS was sent.";
+  }
+  $("smsText").textContent = smsMessage;
 
   $("notes").value = record.notes || "";
   if (record.photo) {

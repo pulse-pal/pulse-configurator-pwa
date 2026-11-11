@@ -34,7 +34,8 @@
   const state = Store.get();
 
   // Came here without finishing the earlier steps? Send them back.
-  if (!state.vehicle_plate || !state.client_type) {
+  // (An unconfirmed speedometer max counts as unfinished.)
+  if (!state.vehicle_plate || !state.client_type || !state.speedo_confirmed) {
     Router.replace("#/install/3");
     return;
   }
@@ -215,11 +216,16 @@
         client_phone: s.client_phone,
         client_type: s.client_type,
         vehicle_plate: s.vehicle_plate,
-        vehicle_make: "",
-        vehicle_model: "",
-        vehicle_year: null,
+        vehicle_make: s.vehicle_make,
+        vehicle_model: s.vehicle_model,
+        vehicle_year: s.vehicle_year,
         vehicle_type: s.vehicle_type,
+        speedometer_max: s.speedometer_max,
+        speedometer_max_source: s.speedometer_max_source,
         fleet_name: fleetNameFor(s),
+        driver_name: s.driver_name,
+        driver_phone: s.driver_phone,
+        driver_account_type: s.driver_account_type,
         assigned_driver_phone: s.assigned_driver_phone,
         status: "complete",
         issue: null,

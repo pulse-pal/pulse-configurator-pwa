@@ -306,6 +306,121 @@
   border-radius: var(--radius-lg);
 }
 
+/* ---------- STEP 3: speedometer max ---------- */
+.speedo__msg {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.speedo__spin {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--accent-strong);
+}
+
+.speedo__spin svg {
+  width: 22px;
+  height: 22px;
+  animation: spin 1s linear infinite;
+}
+
+.speedo__panel {
+  padding: var(--sp-4);
+  background: var(--card-gradient);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.speedo__label {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.speedo__note {
+  margin: 0 0 var(--sp-3);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.speedo__change {
+  margin: var(--sp-3) 0 0;
+}
+
+/* 5 number chips + Other in two rows of three, digital dash full width */
+.speedo__chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-2);
+}
+
+.speedo-chip {
+  min-height: var(--tap);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface-2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--heading);
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s, transform 0.12s;
+}
+
+.speedo-chip:active {
+  transform: scale(0.98);
+}
+
+.speedo-chip--wide {
+  grid-column: 1 / -1;
+  font-size: var(--fs-sm);
+}
+
+.speedo-chip.selected {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.speedo__other {
+  margin-top: var(--sp-3);
+}
+
+.speedo__confirm {
+  margin-top: var(--sp-4);
+}
+
+/* Confirmed: soft blue like the Done badges, no solid fill */
+.btn.speedo__confirm.is-confirmed {
+  background: var(--success-soft);
+  border-color: transparent;
+  color: var(--success);
+}
+
+.speedo__next-hint {
+  text-align: center;
+}
+
+/* Fleet only: optional driver */
+.assign-driver {
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-4);
+  background: var(--surface-2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.assign-driver > .field__label {
+  margin-bottom: var(--sp-3);
+}
+
 /* ---------- STEP 4: diagram in modal ---------- */
 .obd-diagram {
   width: 100%;

@@ -151,7 +151,16 @@ const Store = (function () {
       new_fleet_phone: "",
       vehicle_plate: "",
       vehicle_type: "",
-      assigned_driver_phone: "",
+      vehicle_make: "",
+      vehicle_model: "",
+      vehicle_year: null,
+      speedometer_max: null,
+      speedometer_max_source: "",   // "ai_lookup" | "installer" | "default"
+      speedo_confirmed: false,      // the installer tapped Confirm in Step 3
+      driver_name: "",              // fleet only: optional assigned driver
+      driver_phone: "",
+      driver_account_type: "",      // "driver" | "fleet_driver"
+      assigned_driver_phone: "",    // old key, kept until Step 5 and Detail read driver_phone
       test_results: [],
       notes: "",
       saved_record_id: null
@@ -305,6 +314,7 @@ const Installs = (function () {
     return d;
   }
 
+  // Today / This week / Total are counted from the installation dates themselves
   function stats(staff) {
     const mine = byStaff(staff);
     const today = startOfToday();
@@ -314,7 +324,7 @@ const Installs = (function () {
     return {
       today: mine.filter(function (i) { return new Date(i.installed_at) >= today; }).length,
       week: mine.filter(function (i) { return new Date(i.installed_at) >= weekAgo; }).length,
-      total: staff.installs_before_today + mine.length
+      total: mine.length
     };
   }
 

@@ -58,18 +58,25 @@
     .join(" ");
 
   html += section("Vehicle",
-    row("Plate", item.vehicle_plate, true) +
     row("Vehicle", makeModel) +
-    row("Type", Fmt.vehicleTypeLabel(item.vehicle_type))
+    row("Plate", item.vehicle_plate, true) +
+    row("Type", Fmt.vehicleTypeLabel(item.vehicle_type)) +
+    row("Speedometer max", item.speedometer_max ? item.speedometer_max + " km/h" : "") +
+    row("Source", item.speedometer_max ? SPEEDO_SOURCE_LABELS[item.speedometer_max_source] : "")
   );
 
   /* ---------- client ---------- */
+  // Fleet driver: "Joseph Otieno · 0722111222". Older records only kept the phone.
+  const driverText = item.driver_name
+    ? item.driver_name + (item.driver_phone ? " · " + item.driver_phone : "")
+    : (item.driver_phone || item.assigned_driver_phone || "");
+
   html += section("Client",
     row("Name", item.client_name) +
     row("Phone", item.client_phone) +
-    row("Type", Fmt.clientTypeLabel(item.client_type)) +
+    row("Client type", Fmt.clientTypeLabel(item.client_type)) +
     row("Fleet", item.fleet_name) +
-    row("Assigned driver", item.assigned_driver_phone)
+    row("Assigned driver", driverText)
   );
 
   /* ---------- installation record + test results ---------- */

@@ -7,7 +7,7 @@
    Bump CACHE_VERSION whenever you ship changes.
    ========================================================== */
 
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 const CACHE_NAME = "pulsepal-configurator-" + CACHE_VERSION;
 
 const PRECACHE_URLS = [
